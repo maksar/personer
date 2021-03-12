@@ -20,7 +20,7 @@ enum class Region(vararg val names: String) {
     UK("Ireland", "United Kingdom"),
     CIS("Belarus", "Russian Federation", "Kazakhstan", "Ukraine"),
     EU(
-    "Germany", "Switzerland", "Netherlands", "Sweden", "Luxembourg", "Belgium", "Italy", "Norway", "Estonia",
+    "Austria", "Germany", "Switzerland", "Netherlands", "Sweden", "Luxembourg", "Belgium", "Italy", "Norway", "Estonia",
     "Denmark", "Spain", "Czech Republic", "Portugal", "Latvia", "Cyprus", "Finland", "Gibraltar", "Greece",
     "Poland", "Montenegro", "Austria", "Slovak Republic", "Hungary", "France"
     ),
@@ -33,7 +33,6 @@ enum class Region(vararg val names: String) {
     companion object {
         fun fromRegion(region: String?): Region = values().firstOrNull { it.names.contains(region) } ?: None
     }
-
 }
 
 @FlowPreview
@@ -54,7 +53,7 @@ suspend fun main() {
         it.values.asSequence().filter { it.second == None }.map { it.first }
             .distinct().sortedBy { it }.toList().takeIf { it.isNotEmpty() }?.let {
                 println("Following country regions are not mapped:")
-                it.forEach { println(it) }
+                it.forEach(::println)
             }
     }.filterValues { (_, region, dataRegion) ->
         region.name != dataRegion
