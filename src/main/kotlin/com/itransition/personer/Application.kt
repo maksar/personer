@@ -20,9 +20,9 @@ enum class Region(vararg val names: String) {
     UK("Ireland", "United Kingdom"),
     CIS("Belarus", "Russian Federation", "Kazakhstan", "Ukraine"),
     EU(
-    "Austria", "Germany", "Switzerland", "Netherlands", "Sweden", "Luxembourg", "Belgium", "Italy", "Norway", "Estonia",
-    "Denmark", "Spain", "Czech Republic", "Portugal", "Latvia", "Cyprus", "Finland", "Gibraltar", "Greece",
-    "Poland", "Montenegro", "Austria", "Slovak Republic", "Hungary", "France"
+        "Austria", "Belgium", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany",
+        "Gibraltar", "Greece", "Hungary", "Italy", "Latvia", "Luxembourg", "Montenegro", "Netherlands", "Norway",
+        "Poland", "Portugal", "Slovak Republic", "Spain", "Sweden", "Switzerland"
     ),
     None {
         override fun id(): String = "-1"
