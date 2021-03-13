@@ -4,7 +4,9 @@ import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldVal
 import com.atlassian.jira.rest.client.api.domain.input.FieldInput
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput.createWithFields
 import com.itransition.personer.Region.*
+import com.itransition.personer.Region.Companion.fromRegion
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.runBlocking
 import org.codehaus.jettison.json.JSONObject
 
 const val VALUE: String = "value"
@@ -31,26 +33,28 @@ enum class Region(vararg val names: String) {
     open fun id(): String = possibleValues.first { it.value == name }.id.toString()
 
     companion object {
-        fun fromRegion(region: String?): Region = values().firstOrNull { it.names.contains(region) } ?: None
+        fun fromRegion(region: String): Region = values().firstOrNull { it.names.contains(region) } ?: None
     }
 }
 
-@FlowPreview
-suspend fun main() {
-    projectCards(setOf(
-        env[PERSONER_JIRA_CUSTOMER_REGION_FIELD],
-        env[PERSONER_JIRA_PERSONAL_DATA_REGION_FIELD]
-    )).associateWith {
-        Pair(
-            getField(it, PERSONER_JIRA_CUSTOMER_REGION_FIELD)?.toString()?.split(", ")?.first(),
-            (getField(it, PERSONER_JIRA_PERSONAL_DATA_REGION_FIELD) as JSONObject?)?.getString(VALUE)
+fun main() {
+    runBlocking {
+        projectCards(
+            setOf(
+                env[PERSONER_JIRA_CUSTOMER_REGION_FIELD],
+                env[PERSONER_JIRA_PERSONAL_DATA_REGION_FIELD]
+            )
         )
-    }.filterValues { (region, _) ->
-        region != null
-    }.mapValues { (_, regions) ->
-        Triple(regions.first, Region.fromRegion(regions.first), regions.second)
+    }.associateWith {
+        (getField(it, PERSONER_JIRA_CUSTOMER_REGION_FIELD)?.toString()?.split(", ")?.first() ?: None.name).let { region ->
+            Triple(
+                region,
+                fromRegion(region),
+                (getField(it, PERSONER_JIRA_PERSONAL_DATA_REGION_FIELD) as JSONObject?)?.getString(VALUE) ?: None.name
+            )
+        }
     }.also {
-        it.values.asSequence().filter { it.second == None }.map { it.first }
+        it.values.asSequence().filter { it.first != None.name && it.second == None }.map { it.first }
             .distinct().sortedBy { it }.toList().takeIf { it.isNotEmpty() }?.let {
                 println("Following country regions are not mapped:")
                 it.forEach(::println)
