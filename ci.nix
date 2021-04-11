@@ -1,16 +1,12 @@
-builtins.mapAttrs (k: _v:
-  let
+let
+  platform = "x86_64-linux";
+  flake = (import (fetchTarball {
+    url = "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
+  }) { src = ./.; });
+  pkgs = flake.defaultNix.inputs.nixpkgs.outputs.legacyPackages.${platform};
 
-    url = "https://github.com/NixOS/nixpkgs/archive/2255f292063ccbe184ff8f9b35ce475c04d5ae69.tar.gz";
-    pkgs = import (builtins.fetchTarball url) { system = k; };
-  in
-  pkgs.recurseIntoAttrs {
-    # These two attributes will appear in your job for each platform.
-    personer = (builtins.getFlake "github:maksar/personer").defaultPackage.${pkgs.system};
-    hello = pkgs.hello;
-  }
-) {
-  x86_64-linux = {};
-  # Uncomment to test build on macOS too
-  # x86_64-darwin = {};
+in {
+  ${platform} = pkgs.recurseIntoAttrs {
+    personer = flake.defaultNix.defaultPackage.${platform};
+  };
 }
