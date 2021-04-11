@@ -8,11 +8,6 @@ builtins.mapAttrs (k: _v:
     # These two attributes will appear in your job for each platform.
     personer = (builtins.getFlake "github:maksar/personer").defaultPackage.${pkgs.system};
     hello = pkgs.hello;
-    cow-hello = pkgs.runCommand "cow-hello" {
-      buildInputs = [ pkgs.hello pkgs.cowsay ];
-    } ''
-      hello | cowsay > $out
-    '';
   }
 ) {
   x86_64-linux = {};
